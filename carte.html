@@ -281,8 +281,8 @@
         zoomControl: true,
     });
 
-    // Tuiles CartoDB Dark Matter (sombre, premium, sans clé API)
-    L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
+    // Tuiles CartoDB Voyager (colorées, lisibles, sans clé API)
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
         attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>',
         subdomains: 'abcd',
         maxZoom: 19
@@ -291,12 +291,12 @@
     // ===== Marqueur personnalisé (cercle orange pulsant) =====
     function createMarker(latlng, data) {
         const marker = L.circleMarker(latlng, {
-            radius: 12,
+            radius: 7,
             fillColor: '#E67E22',
             color: '#fff',
             weight: 2,
             opacity: 1,
-            fillOpacity: 0.9
+            fillOpacity: 0.95
         });
 
         const popupContent = `
@@ -316,11 +316,11 @@
 
         // Effet de pulsation au survol
         marker.on('mouseover', function() {
-            this.setStyle({ radius: 16, fillOpacity: 1 });
+            this.setStyle({ radius: 10, fillOpacity: 1 });
             this.openPopup();
         });
         marker.on('mouseout', function() {
-            this.setStyle({ radius: 12, fillOpacity: 0.9 });
+            this.setStyle({ radius: 7, fillOpacity: 0.95 });
         });
 
         return marker;
