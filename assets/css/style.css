@@ -212,7 +212,7 @@ img {
 /* --- Hero Section --- */
 .hero {
   position: relative;
-  padding: 130px 0 60px;
+  padding: 85px 0 40px;
   background: radial-gradient(circle at top right, rgba(230, 126, 34, 0.1), transparent 40%),
               var(--primary-color);
   overflow: hidden;
