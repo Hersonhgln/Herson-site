@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Carte des Projets | Herson HOGLONOU</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0A1A2F;
+            --secondary: #102840;
+            --accent: #E67E22;
+            --accent-light: rgba(230,126,34,0.15);
+            --muted: rgba(255,255,255,0.55);
+            --card-bg: rgba(16, 40, 64, 0.92);
+        }
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            min-height: 100vh;
+            background-color: var(--primary);
+            font-family: 'Inter', sans-serif;
+            color: #fff;
+            overflow-x: hidden;
+        }
+
+        /* Grille de fond */
+        .grid-bg {
+            position: fixed; inset: 0; pointer-events: none; z-index: 0;
+            background-image:
+                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
+            background-size: 60px 60px;
+        }
+
+        /* ===== NAV ===== */
+        nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+            background: rgba(10, 26, 47, 0.95);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255,255,255,0.07);
+            padding: 0 24px;
+            height: 64px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .logo { font-family: 'Outfit', sans-serif; font-size: 1.25rem; font-weight: 800; color: #fff; text-decoration: none; }
+        .logo span { color: var(--accent); }
+        .nav-back { font-size: 0.88rem; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+        .nav-back:hover { color: var(--accent); }
+
+        /* ===== HERO HEADER ===== */
+        .page-header {
+            margin-top: 64px;
+            padding: 40px 24px 20px;
+            text-align: center;
+            position: relative; z-index: 1;
+        }
+        .section-tag {
+            display: inline-block;
+            background: var(--accent-light);
+            border: 1px solid rgba(230,126,34,0.3);
+            color: var(--accent);
+            font-size: 0.75rem; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+            padding: 5px 16px; border-radius: 30px; margin-bottom: 14px;
+        }
+        .page-header h1 {
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(1.8rem, 4vw, 2.6rem);
+            font-weight: 800; margin-bottom: 10px;
+        }
+        .page-header h1 span { color: var(--accent); }
+        .page-header p { color: var(--muted); font-size: 1rem; max-width: 550px; margin: 0 auto; line-height: 1.7; }
+
+        /* ===== COMPTEURS ===== */
+        .stats-row {
+            display: flex; justify-content: center; gap: 30px; flex-wrap: wrap;
+            padding: 20px 24px 0;
+            position: relative; z-index: 1;
+        }
+        .stat-chip {
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px; padding: 12px 24px; text-align: center;
+        }
+        .stat-chip strong { font-family: 'Outfit', sans-serif; font-size: 1.5rem; font-weight: 800; color: var(--accent); display: block; }
+        .stat-chip span { font-size: 0.8rem; color: var(--muted); }
+
+        /* ===== ZONE CARTE ===== */
+        .map-area {
+            position: relative; z-index: 1;
+            padding: 20px 16px 40px;
+            display: flex; flex-direction: column; align-items: center;
+        }
+        .map-wrap {
+            position: relative;
+            width: 100%; max-width: 700px;
+        }
+        .map-wrap svg { width: 100%; height: auto; display: block; }
+
+        /* Continent SVG styling */
+        .continent { fill: #0d2840; stroke: rgba(230,126,34,0.2); stroke-width: 1.5; }
+        .country-shape { fill: rgba(230,126,34,0.12); stroke: rgba(230,126,34,0.4); stroke-width: 1; cursor: pointer; transition: fill 0.3s; }
+        .country-shape:hover { fill: rgba(230,126,34,0.35); }
+        .country-shape.active { fill: rgba(230,126,34,0.3); }
+
+        /* Marqueurs pulsants */
+        .marker-group { cursor: pointer; }
+        .marker-pulse {
+            fill: var(--accent); opacity: 0.25;
+            animation: markerPulse 2s ease-out infinite;
+        }
+        .marker-core { fill: var(--accent); }
+        .marker-ring { fill: none; stroke: var(--accent); stroke-width: 1.5; opacity: 0.6; }
+        @keyframes markerPulse {
+            0%   { r: 10; opacity: 0.3; }
+            100% { r: 24; opacity: 0; }
+        }
+        .marker-label {
+            font-family: 'Outfit', sans-serif; font-size: 9px; font-weight: 700;
+            fill: #fff; text-anchor: middle; dominant-baseline: central;
+            pointer-events: none;
+        }
+
+        /* Ligne de connexion décorative */
+        .connect-line { stroke: rgba(230,126,34,0.2); stroke-width: 0.8; stroke-dasharray: 4 4; fill: none; }
+
+        /* Légende pays */
+        .country-list {
+            width: 100%; max-width: 700px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px; padding: 0 0 20px;
+        }
+        .country-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 14px; padding: 16px 18px;
+            display: flex; gap: 14px; align-items: flex-start;
+            cursor: pointer; transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+        }
+        .country-card:hover {
+            border-color: rgba(230,126,34,0.5);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.3);
+        }
+        .country-card.highlighted { border-color: var(--accent); box-shadow: 0 0 0 1px rgba(230,126,34,0.3); }
+        .card-flag {
+            width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.4rem; background: var(--accent-light);
+            border: 1px solid rgba(230,126,34,0.2);
+        }
+        .card-info h3 { font-family: 'Outfit', sans-serif; font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+        .card-info .country-name { font-size: 0.72rem; font-weight: 600; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .card-info p { font-size: 0.8rem; color: var(--muted); line-height: 1.5; }
+        .card-tag {
+            display: inline-block; margin-top: 8px;
+            background: rgba(230,126,34,0.1); border: 1px solid rgba(230,126,34,0.25);
+            color: var(--accent); font-size: 0.68rem; font-weight: 600;
+            padding: 2px 10px; border-radius: 20px;
+        }
+
+        /* Tooltip survol */
+        #tooltip {
+            position: fixed; z-index: 200;
+            background: rgba(10, 26, 47, 0.97);
+            border: 1px solid rgba(230, 126, 34, 0.5);
+            border-radius: 12px;
+            padding: 12px 16px;
+            max-width: 220px;
+            pointer-events: none;
+            opacity: 0; transition: opacity 0.2s;
+            backdrop-filter: blur(10px);
+        }
+        #tooltip.show { opacity: 1; }
+        #tooltip h4 { font-family: 'Outfit', sans-serif; font-size: 0.88rem; font-weight: 700; color: var(--accent); margin-bottom: 4px; }
+        #tooltip p { font-size: 0.78rem; color: rgba(255,255,255,0.8); line-height: 1.5; }
+
+        /* Footer */
+        .page-footer { text-align: center; padding: 20px; font-size: 0.78rem; color: var(--muted); position: relative; z-index: 1; }
+        .page-footer a { color: var(--accent); text-decoration: none; }
+    </style>
+</head>
+<body>
+
+<div class="grid-bg"></div>
+
+<!-- Tooltip -->
+<div id="tooltip">
+    <h4 id="tt-title"></h4>
+    <p id="tt-desc"></p>
+</div>
+
+<!-- Nav -->
+<nav>
+    <a href="index.html" class="logo">Herson <span>HOGLONOU</span>.</a>
+    <a href="index.html#portfolio" class="nav-back"><i class="fas fa-arrow-left"></i> Retour au Portfolio</a>
+</nav>
+
+<!-- En-tête -->
+<div class="page-header">
+    <span class="section-tag">Impact Africain</span>
+    <h1>Mes projets à travers <span>l'Afrique</span></h1>
+    <p>Survolez ou cliquez sur un point pour découvrir le projet accompagné dans chaque pays.</p>
+</div>
+
+<!-- Stats -->
+<div class="stats-row">
+    <div class="stat-chip"><strong>7</strong><span>Pays couverts</span></div>
+    <div class="stat-chip"><strong>+15</strong><span>Projets accompagnés</span></div>
+    <div class="stat-chip"><strong>3</strong><span>Filières clés</span></div>
+</div>
+
+<!-- Zone carte -->
+<div class="map-area">
+    <div class="map-wrap">
+        <!--
+            Carte SVG simplifiée de l'Afrique.
+            Viewbox : 0 0 800 860
+            Positions approximatives des marqueurs par pays.
+        -->
+        <svg viewBox="0 0 800 860" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+                <filter id="glow">
+                    <feGaussianBlur stdDeviation="3" result="blur"/>
+                    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+                </filter>
+                <radialGradient id="mapGrad" cx="50%" cy="40%" r="60%">
+                    <stop offset="0%" stop-color="#112d4a"/>
+                    <stop offset="100%" stop-color="#0A1A2F"/>
+                </radialGradient>
+            </defs>
+
+            <!-- Contour simplifié du continent Africain -->
+            <path class="continent" d="
+                M 310,30
+                C 350,20 410,25 450,40
+                L 500,50 530,70 560,90 575,120
+                L 590,150 600,180 610,210 615,250
+                L 620,290 615,330 610,360 600,390
+                L 590,420 575,450 555,480 530,510
+                L 510,530 490,545 470,555 450,560
+                L 430,558 410,550 395,540
+                L 385,545 375,560 360,575
+                L 345,590 330,605 320,625
+                L 315,645 318,665 325,685
+                L 330,705 325,720 310,730
+                L 295,740 280,745 265,742
+                L 250,730 245,715 248,700
+                L 252,685 248,670 238,660
+                L 225,652 210,650 198,648
+                L 185,642 175,630 170,615
+                L 168,600 170,585 175,572
+                L 180,558 178,545 170,535
+                L 158,525 145,518 132,512
+                L 118,505 108,495 100,482
+                L 95,468 95,452 100,437
+                L 108,422 112,405 108,388
+                L 100,372 90,358 82,342
+                L 75,325 72,308 74,290
+                L 78,272 80,254 78,236
+                L 72,218 62,202 55,185
+                L 52,168 55,150 62,133
+                L 72,117 84,103 98,90
+                L 115,78 135,68 158,60
+                L 182,50 208,40 235,33
+                L 260,28 285,26 310,30 Z
+            " />
+
+            <!-- === MARQUEURS PAR PAYS === -->
+            <!-- Chaque groupe data-* sera lu par le JS -->
+
+            <!-- Sénégal (~x=118, y=245) -->
+            <g class="marker-group" data-country="Sénégal" data-id="senegal"
+               data-project="Production de boisson énergétique"
+               data-desc="Développement d'une gamme de boissons énergétiques à base de plantes locales, destinées aux marchés urbains ouest-africains."
+               data-sector="Agroalimentaire"
+               data-emoji="🍶">
+                <circle cx="118" cy="270" r="18" class="marker-pulse"/>
+                <circle cx="118" cy="270" r="11" class="marker-ring"/>
+                <circle cx="118" cy="270" r="7" class="marker-core" filter="url(#glow)"/>
+                <text x="118" y="270" class="marker-label">SN</text>
+            </g>
+
+            <!-- Guinée (~x=108, y=322) -->
+            <g class="marker-group" data-country="Guinée" data-id="guinee"
+               data-project="Transformation de poulets de chair"
+               data-desc="Mise en place d'une unité de transformation et de conditionnement de poulets de chair pour la distribution locale."
+               data-sector="Élevage & Transformation"
+               data-emoji="🐔">
+                <circle cx="108" cy="328" r="18" class="marker-pulse" style="animation-delay:0.5s"/>
+                <circle cx="108" cy="328" r="11" class="marker-ring"/>
+                <circle cx="108" cy="328" r="7" class="marker-core" filter="url(#glow)"/>
+                <text x="108" y="328" class="marker-label">GN</text>
+            </g>
+
+            <!-- Gabon (~x=398, y=458) -->
+            <g class="marker-group" data-country="Gabon" data-id="gabon"
+               data-project="Élevage & Transformation de poulets de chair"
+               data-desc="Production industrielle de poulets de chair couplée à une unité de transformation, dans le cadre de la mission Souveraineté Alimentaire du Gouvernement Gabonais."
+               data-sector="Mission Gouvernementale"
+               data-emoji="🇬🇦">
+                <circle cx="398" cy="458" r="18" class="marker-pulse" style="animation-delay:1s"/>
+                <circle cx="398" cy="458" r="11" class="marker-ring"/>
+                <circle cx="398" cy="458" r="7" class="marker-core" filter="url(#glow)"/>
+                <text x="398" y="458" class="marker-label">GA</text>
+            </g>
+
+            <!-- Cameroun (~x=438, y=378) -->
+            <g class="marker-group" data-country="Cameroun" data-id="cameroun"
+               data-project="Pâtisserie pour diabétiques"
+               data-desc="Lancement d'une gamme de pâtisseries à index glycémique bas, pensées pour les personnes diabétiques, avec des ingrédients locaux certifiés."
+               data-sector="Agroalimentaire & Santé"
+               data-emoji="🍰">
+                <circle cx="438" cy="378" r="18" class="marker-pulse" style="animation-delay:0.3s"/>
+                <circle cx="438" cy="378" r="11" class="marker-ring"/>
+                <circle cx="438" cy="378" r="7" class="marker-core" filter="url(#glow)"/>
+                <text x="438" y="378" class="marker-label">CM</text>
+            </g>
+
+            <!-- Togo (~x=318, y=330) -->
+            <g class="marker-group" data-country="Togo" data-id="togo"
+               data-project="Production piscicole – Vincent LAWSON"
+               data-desc="Structuration financière et technique d'un projet de pisciculture intensive porté par Vincent LAWSON pour approvisionner le marché local."
+               data-sector="Pisciculture"
+               data-emoji="🐟">
+                <circle cx="318" cy="335" r="18" class="marker-pulse" style="animation-delay:1.5s"/>
+                <circle cx="318" cy="335" r="11" class="marker-ring"/>
+                <circle cx="318" cy="335" r="7" class="marker-core" filter="url(#glow)"/>
+                <text x="318" y="335" class="marker-label">TG</text>
+            </g>
+
+            <!-- Bénin (~x=348, y=325) -->
+            <g class="marker-group" data-country="Bénin" data-id="benin"
+               data-project="Projet X – Incubateur Innovant (inspiré de Sogaï)"
+               data-desc="Programme d'incubation innovant pour agripreneurs béninois, inspiré du modèle Sogaï, combinant financement progressif et accompagnement technique."
+               data-sector="Incubation & Fintech Agri"
+               data-emoji="🇧🇯">
+                <circle cx="348" cy="320" r="18" class="marker-pulse" style="animation-delay:0.8s"/>
+                <circle cx="348" cy="320" r="11" class="marker-ring"/>
+                <circle cx="348" cy="320" r="7" class="marker-core" filter="url(#glow)"/>
+                <text x="348" y="320" class="marker-label">BJ</text>
+            </g>
+
+            <!-- Madagascar (~x=598, y=545) -->
+            <g class="marker-group" data-country="Madagascar" data-id="madagascar"
+               data-project="Production apicole & export UE"
+               data-desc="Développement d'une filière apicole structurée pour exporter du miel certifié biologique vers l'Union Européenne, en partenariat avec des producteurs locaux."
+               data-sector="Agriculture Durable & Export"
+               data-emoji="🍯">
+                <circle cx="618" cy="548" r="18" class="marker-pulse" style="animation-delay:1.2s"/>
+                <circle cx="618" cy="548" r="11" class="marker-ring"/>
+                <circle cx="618" cy="548" r="7" class="marker-core" filter="url(#glow)"/>
+                <text x="618" y="548" class="marker-label">MG</text>
+            </g>
+
+            <!-- Lignes reliant les pays entre eux (décoratives) -->
+            <path class="connect-line" d="M 118,270 Q 200,290 318,335"/>
+            <path class="connect-line" d="M 318,335 Q 333,328 348,320"/>
+            <path class="connect-line" d="M 348,320 Q 393,349 438,378"/>
+            <path class="connect-line" d="M 438,378 Q 418,418 398,458"/>
+            <path class="connect-line" d="M 398,458 Q 508,502 618,548"/>
+        </svg>
+    </div>
+
+    <!-- Cartes des projets -->
+    <div class="country-list" id="country-list">
+
+        <div class="country-card" data-map-id="benin">
+            <div class="card-flag">🇧🇯</div>
+            <div class="card-info">
+                <div class="country-name">Bénin</div>
+                <h3>Projet X – Incubateur Innovant</h3>
+                <p>Incubateur inspiré du modèle Sogaï, combinant financement progressif et accompagnement des agripreneurs.</p>
+                <span class="card-tag">Incubation & Fintech Agri</span>
+            </div>
+        </div>
+
+        <div class="country-card" data-map-id="togo">
+            <div class="card-flag">🇹🇬</div>
+            <div class="card-info">
+                <div class="country-name">Togo</div>
+                <h3>Production piscicole – V. LAWSON</h3>
+                <p>Structuration financière et technique d'un projet de pisciculture intensive pour le marché local.</p>
+                <span class="card-tag">Pisciculture</span>
+            </div>
+        </div>
+
+        <div class="country-card" data-map-id="cameroun">
+            <div class="card-flag">🇨🇲</div>
+            <div class="card-info">
+                <div class="country-name">Cameroun</div>
+                <h3>Pâtisserie pour diabétiques</h3>
+                <p>Production d'une gamme de pâtisseries à faible index glycémique à base d'ingrédients locaux certifiés.</p>
+                <span class="card-tag">Agroalimentaire & Santé</span>
+            </div>
+        </div>
+
+        <div class="country-card" data-map-id="guinee">
+            <div class="card-flag">🇬🇳</div>
+            <div class="card-info">
+                <div class="country-name">Guinée</div>
+                <h3>Transformation de poulets de chair</h3>
+                <p>Mise en place d'une unité de transformation et de conditionnement pour la distribution locale.</p>
+                <span class="card-tag">Élevage & Transformation</span>
+            </div>
+        </div>
+
+        <div class="country-card" data-map-id="gabon">
+            <div class="card-flag">🇬🇦</div>
+            <div class="card-info">
+                <div class="country-name">Gabon</div>
+                <h3>Élevage & Transformation</h3>
+                <p>Production de poulets de chair et transformation dans le cadre de la mission Souveraineté Alimentaire du Gouvernement Gabonais.</p>
+                <span class="card-tag">Mission Gouvernementale</span>
+            </div>
+        </div>
+
+        <div class="country-card" data-map-id="madagascar">
+            <div class="card-flag">🇲🇬</div>
+            <div class="card-info">
+                <div class="country-name">Madagascar</div>
+                <h3>Production apicole & Export UE</h3>
+                <p>Filière apicole structurée pour exporter du miel biologique certifié vers l'Union Européenne.</p>
+                <span class="card-tag">Agriculture Durable & Export</span>
+            </div>
+        </div>
+
+        <div class="country-card" data-map-id="senegal">
+            <div class="card-flag">🇸🇳</div>
+            <div class="card-info">
+                <div class="country-name">Sénégal</div>
+                <h3>Boisson énergétique locale</h3>
+                <p>Développement d'une gamme de boissons énergétiques à base de plantes locales pour les marchés urbains ouest-africains.</p>
+                <span class="card-tag">Agroalimentaire</span>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<div class="page-footer">
+    <a href="index.html">← Retour à l'accueil</a> &nbsp;|&nbsp;
+    © 2026 Herson HOGLONOU
+</div>
+
+<script>
+    const tooltip = document.getElementById('tooltip');
+    const ttTitle = document.getElementById('tt-title');
+    const ttDesc  = document.getElementById('tt-desc');
+
+    // Interaction marqueurs carte → tooltip + highlight carte
+    document.querySelectorAll('.marker-group').forEach(marker => {
+        marker.addEventListener('mouseenter', (e) => {
+            const id      = marker.dataset.id;
+            const country = marker.dataset.country;
+            const project = marker.dataset.project;
+            const desc    = marker.dataset.desc;
+
+            ttTitle.textContent = `${marker.dataset.emoji} ${country} — ${project}`;
+            ttDesc.textContent  = desc;
+            tooltip.classList.add('show');
+
+            // Highlight la carte correspondante
+            document.querySelectorAll('.country-card').forEach(c => c.classList.remove('highlighted'));
+            const card = document.querySelector(`.country-card[data-map-id="${id}"]`);
+            if (card) {
+                card.classList.add('highlighted');
+                card.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }
+        });
+
+        marker.addEventListener('mousemove', (e) => {
+            tooltip.style.left = (e.clientX + 16) + 'px';
+            tooltip.style.top  = (e.clientY - 10) + 'px';
+        });
+
+        marker.addEventListener('mouseleave', () => {
+            tooltip.classList.remove('show');
+            document.querySelectorAll('.country-card').forEach(c => c.classList.remove('highlighted'));
+        });
+
+        // Clic → scroll vers la carte
+        marker.addEventListener('click', () => {
+            const id   = marker.dataset.id;
+            const card = document.querySelector(`.country-card[data-map-id="${id}"]`);
+            if (card) {
+                card.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                card.classList.add('highlighted');
+                setTimeout(() => card.classList.remove('highlighted'), 2000);
+            }
+        });
+    });
+
+    // Interaction cartes → highlight marqueur
+    document.querySelectorAll('.country-card').forEach(card => {
+        card.addEventListener('mouseenter', () => {
+            const id = card.dataset.mapId;
+            const marker = document.querySelector(`.marker-group[data-id="${id}"]`);
+            if (marker) {
+                const core = marker.querySelector('.marker-core');
+                if (core) core.setAttribute('r', '10');
+            }
+        });
+        card.addEventListener('mouseleave', () => {
+            document.querySelectorAll('.marker-core').forEach(c => c.setAttribute('r', '7'));
+        });
+    });
+</script>
+</body>
+</html>
