@@ -4,286 +4,181 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>404 - Page Introuvable | Herson HOGLONOU</title>
-
-    <!-- Google Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Outfit:wght@400;500;700;800;900&display=swap" rel="stylesheet">
-    
-    <!-- Font Awesome -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500&family=Outfit:wght@700;800;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
     <style>
         :root {
-            --primary:    #0A1A2F;
-            --secondary:  #102840;
-            --accent:     #E67E22;
-            --accent-light: rgba(230, 126, 34, 0.15);
-            --text-main:  #FFFFFF;
-            --text-muted: rgba(255,255,255,0.55);
+            --primary:   #0A1A2F;
+            --accent:    #E67E22;
+            --muted:     rgba(255,255,255,0.5);
         }
-
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         body {
-            min-height: 100vh;
+            height: 100vh;
             background-color: var(--primary);
             font-family: 'Inter', sans-serif;
-            color: var(--text-main);
+            color: #fff;
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            justify-content: space-between;
+            padding: 20px 24px;
             overflow: hidden;
             position: relative;
         }
 
-        /* ---- Fond animé ---- */
-        .bg-orb {
-            position: fixed;
-            border-radius: 50%;
-            filter: blur(80px);
-            animation: float 8s ease-in-out infinite alternate;
-            pointer-events: none;
-        }
-        .orb1 { width: 500px; height: 500px; background: radial-gradient(circle, rgba(230,126,34,0.12), transparent 70%); top: -150px; right: -150px; animation-duration: 9s; }
-        .orb2 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(16, 40, 64, 0.6), transparent 70%); bottom: -100px; left: -100px; animation-duration: 11s; }
-        .orb3 { width: 250px; height: 250px; background: radial-gradient(circle, rgba(230,126,34,0.08), transparent 70%); bottom: 20%; right: 10%; animation-duration: 7s; }
-
-        @keyframes float {
-            from { transform: translateY(0px) scale(1); }
-            to   { transform: translateY(-30px) scale(1.05); }
-        }
-
-        /* ---- Grille de fond ---- */
+        /* Fond décoratif */
         .grid-bg {
-            position: fixed;
-            inset: 0;
+            position: fixed; inset: 0;
             background-image:
-                linear-gradient(rgba(255,255,255,0.03) 1px, transparent 1px),
-                linear-gradient(90deg, rgba(255,255,255,0.03) 1px, transparent 1px);
+                linear-gradient(rgba(255,255,255,0.025) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(255,255,255,0.025) 1px, transparent 1px);
             background-size: 60px 60px;
             pointer-events: none;
         }
+        .orb { position: fixed; border-radius: 50%; filter: blur(80px); pointer-events: none; animation: pulse 8s ease-in-out infinite alternate; }
+        .orb1 { width: 400px; height: 400px; background: radial-gradient(circle, rgba(230,126,34,0.1), transparent 70%); top: -150px; right: -100px; }
+        .orb2 { width: 300px; height: 300px; background: radial-gradient(circle, rgba(16,40,64,0.8), transparent 70%); bottom: -80px; left: -80px; animation-duration: 11s; }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
 
-        /* ---- Contenu principal ---- */
-        .wrapper {
-            position: relative;
-            z-index: 10;
-            text-align: center;
-            max-width: 680px;
-            padding: 40px 24px;
-            animation: fadeUp 0.8s ease both;
-        }
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(30px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        /* Logo */
-        .logo {
-            font-family: 'Outfit', sans-serif;
-            font-size: 1.4rem;
-            font-weight: 800;
-            letter-spacing: -0.5px;
-            color: var(--text-main);
-            text-decoration: none;
-            margin-bottom: 40px;
-            display: inline-block;
-        }
+        /* Header */
+        header { position: relative; z-index: 5; width: 100%; display: flex; justify-content: center; }
+        .logo { font-family: 'Outfit', sans-serif; font-size: 1.3rem; font-weight: 800; color: #fff; text-decoration: none; }
         .logo span { color: var(--accent); }
 
-        /* Nombre 404 */
-        .error-number {
+        /* Zone centrale : layout 2 colonnes */
+        .main {
+            position: relative; z-index: 5;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 50px;
+            flex-wrap: wrap;
+            width: 100%;
+            max-width: 900px;
+            flex: 1;
+        }
+
+        /* Colonne gauche : 404 */
+        .left-block { text-align: center; flex-shrink: 0; }
+        .icon-badge {
+            width: 52px; height: 52px;
+            background: rgba(230,126,34,0.15);
+            border: 1px solid rgba(230,126,34,0.3);
+            border-radius: 14px;
+            display: inline-flex; align-items: center; justify-content: center;
+            margin-bottom: 12px;
+        }
+        .icon-badge i { font-size: 1.3rem; color: var(--accent); }
+        .error-num {
             font-family: 'Outfit', sans-serif;
-            font-size: clamp(100px, 20vw, 180px);
+            font-size: clamp(90px, 14vw, 160px);
             font-weight: 900;
             line-height: 1;
-            letter-spacing: -8px;
-            background: linear-gradient(135deg, #fff 30%, rgba(230,126,34,0.7) 100%);
+            letter-spacing: -6px;
+            background: linear-gradient(160deg, #fff 40%, rgba(230,126,34,0.8));
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
-            margin: 10px 0;
-            position: relative;
-            display: inline-block;
         }
 
-        /* Badge icône */
-        .icon-badge {
-            width: 64px;
-            height: 64px;
-            background: var(--accent-light);
-            border: 1px solid rgba(230, 126, 34, 0.3);
-            border-radius: 18px;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            margin-bottom: 24px;
-        }
-        .icon-badge i {
-            font-size: 1.6rem;
-            color: var(--accent);
-        }
-
-        h1 {
+        /* Colonne droite : texte + boutons */
+        .right-block { max-width: 380px; }
+        .right-block h1 {
             font-family: 'Outfit', sans-serif;
-            font-size: clamp(1.4rem, 4vw, 2rem);
-            font-weight: 700;
-            margin-bottom: 16px;
-            line-height: 1.3;
+            font-size: clamp(1.3rem, 3vw, 1.8rem);
+            font-weight: 800; line-height: 1.2; margin-bottom: 12px;
         }
-        h1 span { color: var(--accent); }
+        .right-block h1 span { color: var(--accent); }
+        .right-block p { font-size: 0.92rem; color: var(--muted); line-height: 1.7; margin-bottom: 24px; }
 
-        p.sub {
-            font-size: 1rem;
-            color: var(--text-muted);
-            line-height: 1.8;
-            max-width: 500px;
-            margin: 0 auto 36px;
-        }
-
-        /* Boutons */
-        .btn-group {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-            flex-wrap: wrap;
-            margin-bottom: 50px;
-        }
-
-        .btn-home {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--accent);
-            color: white;
-            font-family: 'Outfit', sans-serif;
-            font-weight: 700;
-            font-size: 0.95rem;
-            padding: 13px 28px;
-            border-radius: 12px;
-            text-decoration: none;
-            transition: transform 0.2s, box-shadow 0.2s;
+        .btn-group { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px; }
+        .btn-primary-404 {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--accent); color: #fff;
+            font-family: 'Outfit', sans-serif; font-weight: 700; font-size: 0.9rem;
+            padding: 11px 22px; border-radius: 10px; text-decoration: none;
             box-shadow: 0 6px 20px rgba(230,126,34,0.3);
+            transition: transform 0.2s, box-shadow 0.2s;
         }
-        .btn-home:hover { transform: translateY(-3px); box-shadow: 0 12px 30px rgba(230,126,34,0.4); }
-
-        .btn-contact {
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            background: rgba(255,255,255,0.07);
-            border: 1px solid rgba(255,255,255,0.13);
-            color: white;
-            font-family: 'Outfit', sans-serif;
-            font-weight: 600;
-            font-size: 0.95rem;
-            padding: 13px 28px;
-            border-radius: 12px;
-            text-decoration: none;
-            transition: background 0.2s, transform 0.2s;
-            backdrop-filter: blur(6px);
+        .btn-primary-404:hover { transform: translateY(-2px); box-shadow: 0 10px 28px rgba(230,126,34,0.45); }
+        .btn-ghost {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(255,255,255,0.07); border: 1px solid rgba(255,255,255,0.12);
+            color: #fff; font-family: 'Outfit', sans-serif; font-weight: 600; font-size: 0.9rem;
+            padding: 11px 22px; border-radius: 10px; text-decoration: none;
+            backdrop-filter: blur(6px); transition: background 0.2s, transform 0.2s;
         }
-        .btn-contact:hover { background: rgba(255,255,255,0.12); transform: translateY(-3px); }
+        .btn-ghost:hover { background: rgba(255,255,255,0.13); transform: translateY(-2px); }
 
         /* Raccourcis rapides */
-        .quick-links {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        .quick-link {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.1);
-            color: var(--text-muted);
-            font-size: 0.85rem;
-            padding: 7px 16px;
-            border-radius: 30px;
-            text-decoration: none;
+        .quick { display: flex; flex-wrap: wrap; gap: 8px; }
+        .quick a {
+            background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
+            color: var(--muted); font-size: 0.8rem; padding: 5px 13px;
+            border-radius: 30px; text-decoration: none;
             transition: color 0.2s, border-color 0.2s, background 0.2s;
         }
-        .quick-link:hover { color: var(--accent); border-color: rgba(230,126,34,0.4); background: rgba(230,126,34,0.07); }
-        .quick-link i { margin-right: 6px; font-size: 0.78rem; }
+        .quick a:hover { color: var(--accent); border-color: rgba(230,126,34,0.4); background: rgba(230,126,34,0.07); }
+        .quick a i { margin-right: 5px; font-size: 0.72rem; }
 
-        /* Séparateur */
-        .separator {
-            width: 50px;
-            height: 3px;
-            background: var(--accent);
-            border-radius: 4px;
-            margin: 28px auto;
-            opacity: 0.6;
-        }
+        /* Footer */
+        footer { position: relative; z-index: 5; font-size: 0.75rem; color: var(--muted); }
 
-        /* Footer minimaliste */
-        .mini-footer {
-            position: fixed;
-            bottom: 20px;
-            left: 50%;
-            transform: translateX(-50%);
-            font-size: 0.78rem;
-            color: var(--text-muted);
-            white-space: nowrap;
+        /* Mobile */
+        @media (max-width: 600px) {
+            .main { flex-direction: column; gap: 16px; text-align: center; }
+            .right-block { text-align: center; }
+            .btn-group, .quick { justify-content: center; }
         }
     </style>
 </head>
 <body>
 
-    <!-- Décors de fond -->
     <div class="grid-bg"></div>
-    <div class="bg-orb orb1"></div>
-    <div class="bg-orb orb2"></div>
-    <div class="bg-orb orb3"></div>
+    <div class="orb orb1"></div>
+    <div class="orb orb2"></div>
 
-    <!-- Contenu -->
-    <div class="wrapper">
-
-        <!-- Logo -->
+    <header>
         <a href="index.html" class="logo">Herson<span>.</span></a>
+    </header>
 
-        <!-- Icône -->
-        <div>
-            <div class="icon-badge">
-                <i class="fas fa-map-signs"></i>
+    <main class="main">
+        <!-- Gauche : 404 -->
+        <div class="left-block">
+            <div><div class="icon-badge"><i class="fas fa-map-signs"></i></div></div>
+            <div class="error-num">404</div>
+        </div>
+
+        <!-- Droite : Message -->
+        <div class="right-block">
+            <h1>Page <span>introuvable.</span></h1>
+            <p>Il semblerait que cette page ait disparu dans les champs d'Afrique. Elle a peut-être été déplacée ou n'a jamais existé. Retournons vers quelque chose de concret.</p>
+
+            <div class="btn-group">
+                <a href="index.html" class="btn-primary-404">
+                    <i class="fas fa-home"></i> Retour à l'accueil
+                </a>
+                <a href="index.html#contact" class="btn-ghost">
+                    <i class="fas fa-envelope"></i> Me contacter
+                </a>
+            </div>
+
+            <div class="quick">
+                <a href="index.html#about"><i class="fas fa-user"></i>À Propos</a>
+                <a href="index.html#services"><i class="fas fa-briefcase"></i>Services</a>
+                <a href="index.html#portfolio"><i class="fas fa-chart-bar"></i>Portfolio</a>
+                <a href="https://hersonhoglonou.blogspot.com" target="_blank"><i class="fas fa-pen-nib"></i>Blog</a>
+                <a href="https://wa.me/22951216580" target="_blank"><i class="fab fa-whatsapp"></i>WhatsApp</a>
             </div>
         </div>
+    </main>
 
-        <!-- Numéro -->
-        <div class="error-number">404</div>
-
-        <!-- Message -->
-        <h1>Page <span>introuvable.</span></h1>
-        <p class="sub">
-            Il semblerait que cette page ait disparu dans les champs d'Afrique. 
-            Peut-être a-t-elle été déplacée, déplacée ou n'a-t-elle jamais existé. 
-            Retournons vers quelque chose de concret.
-        </p>
-
-        <!-- CTA Boutons -->
-        <div class="btn-group">
-            <a href="index.html" class="btn-home">
-                <i class="fas fa-home"></i> Retour à l'accueil
-            </a>
-            <a href="index.html#contact" class="btn-contact">
-                <i class="fas fa-envelope"></i> Me contacter
-            </a>
-        </div>
-
-        <!-- Raccourcis -->
-        <div class="separator"></div>
-        <div class="quick-links">
-            <a href="index.html#about" class="quick-link"><i class="fas fa-user"></i>À Propos</a>
-            <a href="index.html#services" class="quick-link"><i class="fas fa-briefcase"></i>Services</a>
-            <a href="index.html#portfolio" class="quick-link"><i class="fas fa-chart-bar"></i>Portfolio</a>
-            <a href="https://hersonhoglonou.blogspot.com" target="_blank" class="quick-link"><i class="fas fa-pen-nib"></i>Blog</a>
-            <a href="https://wa.me/22951216580" target="_blank" class="quick-link"><i class="fab fa-whatsapp"></i>WhatsApp</a>
-        </div>
-
-    </div>
-
-    <div class="mini-footer">© 2026 Herson HOGLONOU — Agroéconomiste & Investisseur</div>
+    <footer>© 2026 Herson HOGLONOU — Agroéconomiste & Investisseur</footer>
 
 </body>
 </html>
